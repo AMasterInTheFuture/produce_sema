@@ -3,6 +3,7 @@
 #include <unistd.h>
 
 #define CAPACITY 4
+// The structure is for semaphore
 typedef struct {
     int value;
     pthread_mutex_t mutex;
@@ -29,7 +30,7 @@ void sema_init(sema_t *sema, int value)//initlize the semaphore
 
 void sema_wait(sema_t *sema)
 {
-    pthread_mutex_lock(&sema->mutex);
+    pthread_mutex_lock(&sema->mutex);//use lock to void deadlok<automic operation of P>
     --sema->value;
     while (sema->value < 0)
         pthread_cond_wait(&sema->cond, &sema->mutex);
@@ -39,7 +40,7 @@ void sema_wait(sema_t *sema)
 
 void sema_signal(sema_t *sema)
 {
-    pthread_mutex_lock(&sema->mutex);
+    pthread_mutex_lock(&sema->mutex);//use lock to void deadlok<automic operation of V>
     
     ++sema->value;
     
@@ -103,7 +104,7 @@ int main(){
     pthread_create(&consumer_id, NULL, consume, NULL);
     
     produce();
-    pthread_join(consumer_id, NULL);
+    pthread_join(consumer_id, NULL);// avoid the procedure end with produce ;
     return 0;
 
 }
